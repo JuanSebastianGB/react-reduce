@@ -1,12 +1,12 @@
 import './App.css';
-import Contador from './components/contador/Contador';
+import Counter from './components/counter/Counter';
 
 function App() {
   return (
     <div>
       <h1>useReducer</h1>
       <hr />
-      <Contador />
+      <Counter />
     </div>
   );
 }
