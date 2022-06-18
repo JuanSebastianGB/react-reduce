@@ -1,5 +1,9 @@
 import { useReducer } from 'react';
 
+const init = initialState => {
+  return { count: initialState.count + 100 };
+};
+
 /* A constant that contains the action types. */
 const TYPES = {
   INCREMENT: 'INCREMENT',
@@ -35,7 +39,7 @@ const reducer = (state, action) => {
 const initialState = { count: 0 };
 
 const Counter = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, initialState, init);
 
   const add = () => dispatch({ type: TYPES.INCREMENT });
   const substract = () => dispatch({ type: TYPES.DECREMENT });
