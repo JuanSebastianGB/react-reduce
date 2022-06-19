@@ -1,15 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { helpHttp } from '../../helpers/helpHttp';
 import CrudForm from '../crudform/CrudForm';
 import Loader from '../loader/Loader';
 import CrudTable from '../crudtable/CrudTable';
 import Message from '../message/Message';
+import { crudInitialState, crudReducer } from '../../reducers/crudReducer';
 
 const CrudApi = () => {
-  const [db, setDb] = useState(null);
+  const [state, dispatch] = useReducer(crudReducer, crudInitialState);
   const [dataToEdit, setDataToEdit] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const { db } = state;
 
   const api = helpHttp();
   const url = 'http://localhost:5000/santos';
@@ -20,35 +23,35 @@ const CrudApi = () => {
       .get(url)
       .then(res => {
         if (!res.err) {
-          setDb(res);
+          dispatch({ type: 'READ_ALL_DATA', payload: res });
           setError(null);
         } else {
-          setDb(null);
+          dispatch({ type: 'NO_DATA' });
           setError(res);
         }
         setLoading(false);
       });
   }, [url]);
 
+  /**
+   * It takes in a data object, adds an id property to it, and then sends it to the server
+   */
   const createData = data => {
     data.id = Date.now();
-    /* Setting the body of the request to the data that is being passed in. */
     const options = {
       body: data,
       headers: { 'content-type': 'application/json' },
     };
-
-    /* Creating a new entry in the database. */
     api.post(url, options).then(res => {
-      if (!res.err) setDb([...db, res]);
+      if (!res.err) dispatch({ type: 'CREATE_DATA', payload: data });
       else setError(res);
     });
   };
 
   /**
-   * It takes in a data object, creates an endpoint using the url and the data's id, creates an options
-   * object with the data as the body and a content-type header, and then uses the api's put method to
-   * update the data
+   * It takes in a data object, creates an endpoint using the url and the data's id,
+   * creates an options object with the data as the body and a content-type header,
+   * and then uses the api's put method to update the data
    */
   const updateData = data => {
     const endpoint = `${url}/${data.id}`;
@@ -58,8 +61,7 @@ const CrudApi = () => {
     };
     api.put(endpoint, options).then(res => {
       if (!res.err) {
-        const newData = db.map(el => (el.id === data.id ? data : el));
-        setDb(newData);
+        dispatch({ type: 'UPDATE_DATA', payload: data });
       } else setError(res);
     });
   };
@@ -78,8 +80,7 @@ const CrudApi = () => {
       };
       api.del(endpoint, options).then(res => {
         if (!res.err) {
-          const newData = db.filter(el => el.id !== id);
-          setDb(newData);
+          dispatch({ type: 'DELETE_DATA', payload: id });
         } else setError(res);
       });
     }
