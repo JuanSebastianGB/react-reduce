@@ -5,6 +5,7 @@ import Loader from '../loader/Loader';
 import CrudTable from '../crudtable/CrudTable';
 import Message from '../message/Message';
 import { crudInitialState, crudReducer } from '../../reducers/crudReducer';
+import { TYPES } from '../../actions/crudActions';
 
 const CrudApi = () => {
   const [state, dispatch] = useReducer(crudReducer, crudInitialState);
@@ -23,10 +24,10 @@ const CrudApi = () => {
       .get(url)
       .then(res => {
         if (!res.err) {
-          dispatch({ type: 'READ_ALL_DATA', payload: res });
+          dispatch({ type: TYPES.READ_ALL_DATA, payload: res });
           setError(null);
         } else {
-          dispatch({ type: 'NO_DATA' });
+          dispatch({ type: TYPES.NO_DATA });
           setError(res);
         }
         setLoading(false);
@@ -43,7 +44,7 @@ const CrudApi = () => {
       headers: { 'content-type': 'application/json' },
     };
     api.post(url, options).then(res => {
-      if (!res.err) dispatch({ type: 'CREATE_DATA', payload: data });
+      if (!res.err) dispatch({ type: TYPES.CREATE_DATA, payload: data });
       else setError(res);
     });
   };
@@ -60,9 +61,8 @@ const CrudApi = () => {
       headers: { 'content-type': 'application/json' },
     };
     api.put(endpoint, options).then(res => {
-      if (!res.err) {
-        dispatch({ type: 'UPDATE_DATA', payload: data });
-      } else setError(res);
+      if (!res.err) dispatch({ type: TYPES.UPDATE_DATA, payload: data });
+      else setError(res);
     });
   };
 
@@ -79,9 +79,8 @@ const CrudApi = () => {
         headers: { 'content-type': 'application/json' },
       };
       api.del(endpoint, options).then(res => {
-        if (!res.err) {
-          dispatch({ type: 'DELETE_DATA', payload: id });
-        } else setError(res);
+        if (!res.err) dispatch({ type: TYPES.DELETE_DATA, payload: id });
+        else setError(res);
       });
     }
   };

@@ -15,16 +15,21 @@ export const crudReducer = (state, action) => {
   switch (action.type) {
     case TYPES.CREATE_DATA: {
       return {
+        ...state,
         db: [...state.db, action.payload],
       };
     }
     case TYPES.DELETE_DATA: {
       return {
+        ...state,
         db: state.db.filter(el => el.id !== action.payload),
       };
     }
     case TYPES.READ_ALL_DATA: {
-      return { db: [...action.payload] };
+      return {
+        ...state,
+        db: [...action.payload],
+      };
     }
     case TYPES.READ_ONE_DATA: {
       return {};
@@ -34,6 +39,7 @@ export const crudReducer = (state, action) => {
         el.id === action.payload.id ? action.payload : el
       );
       return {
+        ...state,
         db: [...updatedData],
       };
     }
