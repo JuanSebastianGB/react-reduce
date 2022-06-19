@@ -12,28 +12,32 @@ const ShoppingCart = () => {
 
   const { products, cart } = state;
 
+  const showTotal = () => {
+    dispatch({ type: TYPES.SHOW_TOTAL });
+  };
+
   /**
    * `addToCart` is a function that dispatches an action to the reducer
    */
   const addToCart = id => {
-    console.log(id);
-    dispatch({ type: TYPES.ADD_TO_CART });
+    dispatch({ type: TYPES.ADD_TO_CART, payload: id });
   };
   /**
    * `delFromCart` is a function that dispatches an action to the reducer to
    * remove an item from the cart
    */
-  const delFromCart = () => {
-    console.log('removing...');
-    dispatch({ type: TYPES.REMOVE_FROM_CART });
+  const delFromCart = (id, all = false) => {
+    dispatch({
+      type: all ? TYPES.REMOVE_ALL_FROM_CART : TYPES.REMOVE_FROM_CART,
+      payload: id,
+    });
   };
   /**
    * `clearCart` is a function that dispatches an action to the reducer to
    * remove all items from the cart
    */
   const clearCart = () => {
-    console.log('clearing...');
-    dispatch({ type: TYPES.REMOVE_FROM_CART });
+    dispatch({ type: TYPES.CLEAR_CART });
   };
 
   return (
@@ -41,26 +45,28 @@ const ShoppingCart = () => {
       <h2>ShoppingCart</h2>
       <h3>Products</h3>
       <article className='box grid-responsive'>
-        {products.map((data, key) => (
+        {products.map(data => (
           <ProductItem
-            key={key}
+            key={data.id}
             data={data}
             addToCart={addToCart}
-            delFromCart={delFromCart}
-            clearCart={clearCart}
           />
         ))}
       </article>
-      <h3></h3>
+      <button onClick={() => showTotal()}>Show Total</button>
+      <h3>Total products: {state.totalProducts}</h3>
+      <h3>Total Price: ${state.totalPrice}.00</h3>
       <article className='box'>
+        <button onClick={() => clearCart()}>Clear Cart</button>
         <h3>
-          {cart.length > 0 &&
-            cart.map((data, key) => (
-              <ProductCart
-                key={key}
-                data={data}
-              />
-            ))}
+          {cart.map(data => (
+            <ProductCart
+              key={data.id}
+              data={data}
+              delFromCart={delFromCart}
+              clearCart={clearCart}
+            />
+          ))}
         </h3>
       </article>
     </div>
